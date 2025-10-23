@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { initDatabase } from "./init-db";
 
 const app = express();
 app.use(express.json());
@@ -51,6 +52,9 @@ let server: any = null;
 
 async function setupApp() {
   if (!server) {
+    // Initialize database first
+    await initDatabase();
+    
     server = await registerRoutes(app);
     
     // importantly only setup vite in development and after
@@ -77,8 +81,11 @@ export default app;
   
   // Serve on port 5000 for local development
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen(port, "localhost", () => {
-    log(`🚀 Server running on http://localhost:${port}`);
-    log(`📱 Client running on http://localhost:3000`);
+  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  server.listen(port, host, () => {
+    log(`🚀 Server running on http://${host}:${port}`);
+    if (process.env.NODE_ENV !== 'production') {
+      log(`📱 Client running on http://localhost:3000`);
+    }
   });
 })();
