@@ -10,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "start": "node dist/server/index.js",
+    "postbuild": "tsc --project tsconfig.server.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
